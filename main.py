@@ -1,19 +1,21 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import random
 
 app = FastAPI()
 
-# Request model
+# Root route to check if API is running
+@app.get("/")
+def home():
+    return {"message": "Fake review detection API is running"}
+
+# Define request model
 class ReviewRequest(BaseModel):
     link: str
 
-# Fake review detection function (placeholder logic)
-def detect_fake_review(link: str) -> str:
-    # Simulate a fake review detection process (Replace this with ML model)
-    return "Fake Review" if random.choice([True, False]) else "Real Review"
-
-@app.post("/api/detect")
-async def detect_review(review: ReviewRequest):
-    result = detect_fake_review(review.link)
-    return {"link": review.link, "result": result}
+# Fake review detection logic (dummy for now)
+@app.post("/detect")
+def detect_fake_review(request: ReviewRequest):
+    if "example" in request.link:
+        return {"result": "Fake"}
+    else:
+        return {"result": "Real"}
