@@ -7,6 +7,11 @@ import uvicorn
 
 app = FastAPI()
 
+# Root endpoint to check if API is running
+@app.get("/")
+def home():
+    return {"message": "Fake Review Detection API is running!"}
+
 # Google Drive file ID extracted from your link
 file_id = "1Aqp-DREKFolOs-qQ9KvTk-VaBm7ldI9t"
 model_path = "fake_review_model.pkl"
