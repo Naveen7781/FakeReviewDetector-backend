@@ -4,8 +4,18 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI()  # ✅ FastAPI instance must come before adding middleware
+
+# ✅ CORS Middleware (fixing order issue)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change to ["http://localhost:3000"] for security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Google Drive file ID
 file_id = "1Aqp-DREKFolOs-qQ9KvTk-VaBm7ldI9t"
@@ -44,8 +54,8 @@ class ReviewRequest(BaseModel):
 def home():
     return {"message": "Fake Review Detection API is running!"}
 
-@app.post("/predict")
-def predict_review(request: ReviewRequest):
+@app.post("/detect")  # ✅ Changed endpoint from /predict to /detect
+def detect_review(request: ReviewRequest):
     if model is None or vectorizer is None:
         raise HTTPException(status_code=500, detail="Model or vectorizer is not loaded.")
 
@@ -55,7 +65,7 @@ def predict_review(request: ReviewRequest):
     # Make prediction
     prediction = model.predict(transformed_text)[0]
     
-    return {"prediction": "Fake" if prediction == 1 else "Real"}
+    return {"result": "Fake" if prediction == 1 else "Real"}  # ✅ Ensure response format matches frontend
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
