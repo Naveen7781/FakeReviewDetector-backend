@@ -4,6 +4,10 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+import os
+import time
+time.sleep(10)  # Wait 10 seconds before starting
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()  # ✅ FastAPI instance must come before adding middleware
@@ -67,5 +71,10 @@ def detect_review(request: ReviewRequest):
     
     return {"result": "Fake" if prediction == 1 else "Real"}  # ✅ Ensure response format matches frontend
 
+import os
+import uvicorn
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))  # Render provides PORT env variable
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
